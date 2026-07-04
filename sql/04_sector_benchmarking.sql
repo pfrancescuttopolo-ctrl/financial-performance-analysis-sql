@@ -12,15 +12,23 @@
 -- Objective: ROE-based ranking within each sector for the most
 --            recent available year, top 2 per sector.
 
-WITH ranked_roe AS (
+WITH latest_data AS (
+    SELECT DISTINCT ON (company)
+        company,
+        category,
+        year,
+        roe
+    FROM financial_statements
+    ORDER BY company, year DESC
+),
+ranked_roe AS (
     SELECT
         company,
         category,
         year,
         roe,
         DENSE_RANK() OVER (PARTITION BY category ORDER BY roe DESC) AS roe_rank
-    FROM financial_statements
-    WHERE year = (SELECT MAX(year) FROM financial_statements)
+    FROM latest_data
 )
 SELECT
     company,
@@ -31,7 +39,6 @@ SELECT
 FROM ranked_roe
 WHERE roe_rank <= 2
 ORDER BY category, roe_rank;
-
 
 -- Query 13: EBITDA Margin vs Sector Average
 -- Objective: EBITDA margin per company compared against
