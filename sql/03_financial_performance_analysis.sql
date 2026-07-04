@@ -13,9 +13,13 @@
 --            for the most recent available year.
 
 WITH latest_year AS (
-    SELECT *
+    SELECT DISTINCT ON (company)
+        company,
+        category,
+        ebitda,
+        year
     FROM financial_statements
-    WHERE year = (SELECT MAX(year) FROM financial_statements)
+    ORDER BY company, year DESC
 )
 SELECT
     company,
