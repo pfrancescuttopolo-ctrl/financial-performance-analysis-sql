@@ -8,9 +8,9 @@
 -- ============================================================
 
 
--- Query 12: Top 2 Companies by ROE Within Each Sector (Most Recent Year)
--- Objective: ROE-based ranking within each sector for the most
---            recent available year, top 2 per sector.
+-- Query 12: Top 2 ROE Ranks Within Each Sector
+-- Objective: ROE-based ranking within each sector using each
+--            company's most recent available year.
 
 WITH latest_data AS (
     SELECT DISTINCT ON (company)
