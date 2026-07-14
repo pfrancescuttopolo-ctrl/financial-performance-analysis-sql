@@ -42,7 +42,7 @@ ORDER BY category, roe_rank;
 
 -- Query 13: EBITDA Margin vs Sector Average
 -- Objective: EBITDA margin per company compared against
---            the sector average by year.
+--            the overall sector average across all available years.
 
 WITH sector_avg AS (
     SELECT
@@ -56,21 +56,25 @@ company_margin AS (
         company,
         category,
         year,
-        ROUND(ebitda / NULLIF(revenue, 0) * 100, 2) AS ebitda_margin
+        ebitda / NULLIF(revenue, 0) * 100 AS ebitda_margin
     FROM financial_statements
 )
 SELECT
     cm.year,
     cm.company,
     cm.category,
-    cm.ebitda_margin,
+    ROUND(cm.ebitda_margin::NUMERIC, 2) AS ebitda_margin,
     ROUND(sa.avg_sector_ebitda_margin::NUMERIC, 2) AS sector_avg_margin,
     CASE
-        WHEN cm.ebitda_margin > sa.avg_sector_ebitda_margin THEN 'Above Sector Average'
-        ELSE 'Below Sector Average'
+        WHEN cm.ebitda_margin > sa.avg_sector_ebitda_margin
+            THEN 'Above Sector Average'
+        WHEN cm.ebitda_margin < sa.avg_sector_ebitda_margin
+            THEN 'Below Sector Average'
+        ELSE 'At Sector Average'
     END AS vs_sector
 FROM company_margin cm
-JOIN sector_avg sa ON cm.category = sa.category
+JOIN sector_avg sa
+    ON cm.category = sa.category
 ORDER BY cm.category, cm.year, cm.company;
 
 
