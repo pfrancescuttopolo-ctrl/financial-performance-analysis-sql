@@ -66,16 +66,20 @@ FROM financial_statements
 ORDER BY company, year;
 
 
--- Query 11: Leverage Risk Classification by Debt/Equity Quartile
--- Objective: Distribution of companies across four leverage
---            risk quartiles based on debt-to-equity ratio.
+-- Query 11: Debt/Equity Distribution by Quartile
+-- Objective: Distribution of company-year observations across four
+--            quartiles based on debt-to-equity ratio.
+-- Note: Negative debt-to-equity ratios may result from negative shareholder
+--       equity and should not be interpreted as low financial risk.
 
 SELECT
     year,
     company,
     category,
     debt_equity_ratio,
-    NTILE(4) OVER (ORDER BY debt_equity_ratio DESC) AS leverage_risk_quartile
+    NTILE(4) OVER (
+        ORDER BY debt_equity_ratio DESC
+    ) AS debt_equity_quartile
 FROM financial_statements
 WHERE debt_equity_ratio IS NOT NULL
-ORDER BY leverage_risk_quartile, debt_equity_ratio DESC;
+ORDER BY debt_equity_quartile, debt_equity_ratio DESC;
