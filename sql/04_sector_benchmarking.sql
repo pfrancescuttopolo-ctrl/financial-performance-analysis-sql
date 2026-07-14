@@ -78,9 +78,11 @@ JOIN sector_avg sa
 ORDER BY cm.category, cm.year, cm.company;
 
 
--- Query 14: Revenue Growth Outlier Detection
--- Objective: Annual revenue growth classification per company
---            relative to sector average.
+-- Query 14: Revenue Growth Classification vs Sector Average
+-- Objective: Rule-based annual revenue growth classification per company
+--            relative to the overall sector average across all available years.
+-- Note: Growth above 1.5 times the sector average is classified
+--       as high growth, while negative growth is classified as a decline.
 
 WITH yoy AS (
     SELECT
@@ -88,10 +90,19 @@ WITH yoy AS (
         company,
         category,
         revenue,
-        LAG(revenue) OVER (PARTITION BY company ORDER BY year) AS prev_revenue,
+        LAG(revenue) OVER (
+            PARTITION BY company
+            ORDER BY year
+        ) AS prev_revenue,
         ROUND(
-            (revenue - LAG(revenue) OVER (PARTITION BY company ORDER BY year))
-            / NULLIF(LAG(revenue) OVER (PARTITION BY company ORDER BY year), 0) * 100,
+            (revenue - LAG(revenue) OVER (
+                PARTITION BY company
+                ORDER BY year
+            ))
+            / NULLIF(LAG(revenue) OVER (
+                PARTITION BY company
+                ORDER BY year
+            ), 0) * 100,
         2) AS yoy_growth
     FROM financial_statements
 ),
@@ -110,11 +121,15 @@ SELECT
     y.yoy_growth,
     ROUND(sga.avg_sector_growth::NUMERIC, 2) AS sector_avg_growth,
     CASE
-        WHEN y.yoy_growth > sga.avg_sector_growth * 1.5 THEN 'High Growth Outlier'
-        WHEN y.yoy_growth < 0 THEN 'Revenue Decline'
+        WHEN y.yoy_growth < 0
+            THEN 'Revenue Decline'
+        WHEN sga.avg_sector_growth > 0
+            AND y.yoy_growth > sga.avg_sector_growth * 1.5
+            THEN 'High Growth'
         ELSE 'Normal Growth'
     END AS growth_classification
 FROM yoy y
-JOIN sector_growth_avg sga ON y.category = sga.category
+JOIN sector_growth_avg sga
+    ON y.category = sga.category
 WHERE y.yoy_growth IS NOT NULL
 ORDER BY y.category, y.year, y.company;
