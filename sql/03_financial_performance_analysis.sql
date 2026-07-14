@@ -8,9 +8,9 @@
 -- ============================================================
 
 
--- Query 8: EBITDA Ranking Within Sector (Most Recent Year)
+-- Query 8: EBITDA Ranking Within Sector
 -- Objective: EBITDA-based ranking of companies within each sector
---            for the most recent available year.
+--            using each company's most recent available year.
 
 WITH latest_year AS (
     SELECT DISTINCT ON (company)
@@ -22,12 +22,16 @@ WITH latest_year AS (
     ORDER BY company, year DESC
 )
 SELECT
+    year,
     company,
     category,
     ebitda,
-    RANK() OVER (PARTITION BY category ORDER BY ebitda DESC) AS ebitda_rank_in_sector
+    RANK() OVER (
+        PARTITION BY category
+        ORDER BY ebitda DESC
+    ) AS ebitda_rank_in_sector
 FROM latest_year
-ORDER BY category, ebitda_rank_in_sector;
+ORDER BY category, ebitda_rank_in_sector, company;
 
 
 -- Query 9: Year-Over-Year Revenue Growth
