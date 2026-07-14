@@ -24,16 +24,18 @@ ORDER BY avg_ebitda DESC;
 
 
 -- Query 6: Sector-Level Profitability Overview
--- Objective: Average revenue, EBITDA, ROE, and net margin
---            aggregated by sector for cross-industry comparison.
+-- Objective: Average revenue, EBITDA, ROE, and net profit margin
+--            aggregated by sector across all available years
+--            for cross-industry comparison.
 
 SELECT
     category,
     COUNT(DISTINCT company) AS num_companies,
+    COUNT(*) AS num_observations,
     ROUND(AVG(revenue), 2) AS avg_revenue,
     ROUND(AVG(ebitda), 2) AS avg_ebitda,
     ROUND(AVG(roe), 2) AS avg_roe,
-    ROUND(AVG(net_profit_margin), 2) AS avg_margin
+    ROUND(AVG(net_profit_margin), 2) AS avg_net_profit_margin
 FROM financial_statements
 GROUP BY category
 ORDER BY avg_ebitda DESC;
