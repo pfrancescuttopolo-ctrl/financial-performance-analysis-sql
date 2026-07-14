@@ -8,7 +8,7 @@
 -- ============================================================
 
 
--- Query 5: Average Revenue and EBITDA per Company
+-- Query 5: Average Revenue, EBITDA, and Net Profit Margin per Company
 -- Objective: Average EBITDA, revenue, and net profit margin
 --            per company across the full observation period.
 
