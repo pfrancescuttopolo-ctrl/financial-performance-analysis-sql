@@ -35,8 +35,8 @@ FROM financial_statements;
 
 
 -- Query 3: Financial Distress Flagging
--- Objective: Classify companies by financial health status
---            based on shareholder equity and net income signals.
+-- Objective: Classify company-year observations by financial
+--            distress signals based on shareholder equity and net income.
 
 SELECT
     year,
@@ -45,9 +45,13 @@ SELECT
     shareholder_equity,
     net_income,
     CASE
-        WHEN shareholder_equity < 0 THEN 'Negative Equity'
-        WHEN net_income < 0 THEN 'Net Loss'
-        ELSE 'Healthy'
+        WHEN shareholder_equity < 0 AND net_income < 0
+            THEN 'Negative Equity and Net Loss'
+        WHEN shareholder_equity < 0
+            THEN 'Negative Equity'
+        WHEN net_income < 0
+            THEN 'Net Loss'
+        ELSE 'No Distress Signal'
     END AS financial_status
 FROM financial_statements
 ORDER BY financial_status, company, year;
