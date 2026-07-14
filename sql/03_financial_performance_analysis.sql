@@ -54,7 +54,7 @@ ORDER BY company, year;
 
 -- Query 10: Cumulative Operating Cash Flow per Company
 -- Objective: Running total of operating cash flow per company
---            from 2009 to the most recent available year.
+--            from the first to the most recent available year.
 
 SELECT
     year,
