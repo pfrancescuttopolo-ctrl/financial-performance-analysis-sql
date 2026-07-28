@@ -29,6 +29,7 @@ The analysis focuses on company performance through profitability, revenue growt
 - **Companies:** 12
 - **Time Period:** 2009–2023
 - **Observation Level:** Annual company financial statements
+- **Currency/Units:** Market Cap is expressed in USD billions; all other financial figures (Revenue, EBITDA, Net Income, Cash Flow, Shareholder Equity) are expressed in USD millions, as reported in the source dataset
 
 ### Data Quality Notes
 
